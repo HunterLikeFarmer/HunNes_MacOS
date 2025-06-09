@@ -12,7 +12,6 @@ u8 Controller::read(u16 address) {
         btnStateLocked >>= 1;
         return JOY1;
     } else {
-        //TODO: Implement JOY2
         return JOY2;
     }
 }
@@ -25,7 +24,6 @@ void Controller::write(u16 address, u8 data) {
 
         strobe = data & 0x1;
     } else {
-        //TODO: Implement JOY2
     }
 }
 
