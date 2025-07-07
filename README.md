@@ -2,7 +2,7 @@
 
 HunNes is an NES (Nintendo Entertainment System) emulator written in C++.
 
-This project aims to emulate the behavior of the NES hardware, including the 6502 CPU, PPU (graphics), APU (audio), and controllers. It's able to run real ROM games.
+This project aims to emulate the behavior of the NES hardware, including the 6502 CPU, PPU (graphics), and controllers. It's able to run real ROM games.
 ---
 
 ## Getting Started
