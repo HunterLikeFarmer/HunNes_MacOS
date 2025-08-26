@@ -4,6 +4,7 @@
 
 namespace HunNes {
 
+    
 void CPU6502::step() {
     // NMI() will be triggered only by PPU when PPU has reached the start of VBlank, which means the screen is done drawing a frame
     if (ppu->genNMI()) {
