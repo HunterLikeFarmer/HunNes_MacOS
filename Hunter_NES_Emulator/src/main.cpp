@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     HunNes::ROM rom;
     rom.open(selectedRom);
     rom.printHeader();
-    HunNes::Mapper* mapper = rom.getMapper();   // This is where we choose the mapper
+    HunNes::Mapper* mapper = rom.getMapper();   // This is where we choose the mapper. It came with the ROM
 
     if (mapper == NULL) {
         std::cout << "Unknown mapper." << std::endl;

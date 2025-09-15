@@ -4,6 +4,7 @@
 
 namespace HunNes {
 
+// Every CPU CPU tick will have one PPU tick, which moves several dots and scanline
 void PPU::tick() {
     if ((scanLine >= 0 && scanLine <= 239) || scanLine == 261) {  //visible scanline, pre-render scanline
         if (scanLine == 261) {
@@ -357,65 +358,6 @@ void PPU::write(u16 address, u8 data) {
     }
 }
 
-//u8 PPU::ppuread(u16 address) {
-//    switch (address) {
-//        case 0x0000 ... 0x1FFF:
-//            return mapper->ppuread(address);
-//            break;
-//        case 0x2000 ... 0x2FFF:
-//            //Horizontal
-//            if (mapper->getMirroring() == 0) {
-//                if (address >= 0x2400 && address < 0x2800) {
-//                    address -= 0x400;
-//                }
-//
-//                if (address >= 0x2800 && address < 0x2c00) {
-//                    address -= 0x400;
-//                }
-//
-//                if (address >= 0x2c00 && address < 0x3000) {
-//                    address -= 0x800;
-//                }
-//                //Vertical
-//            } else if (mapper->getMirroring() == 1) {
-//                if (address >= 0x2800 && address < 0x3000) {
-//                    address -= 0x800;
-//                }
-//                //One-screen mirroring, lower-bank (MMC1)
-//            } else if (mapper->getMirroring() == 2) {
-//                address &= ~0xC00;
-//                //One-screen mirroring, upper-bank (MMC1)
-//            } else {
-//                address = (address & ~0xC00) + 0x400;
-//            }
-//
-//            return vram[address - 0x2000];
-//            break;
-//        case 0x3F00 ... 0x3F0F:
-//            if (address == 0x3F04 || address == 0x3F08 || address == 0x3F0C) {
-//                address = 0x3F00;
-//            }
-//
-//            return bg_palette[address - 0x3F00];
-//            break;
-//        case 0x3F10 ... 0x3F1F:
-//            if (address == 0x3F10 || address == 0x3F14 || address == 0x3F18 || address == 0x3F1C) {
-//                return ppuread(address & 0x3F0F);
-//            } else {
-//                return sprite_palette[address - 0x3F10];
-//            }
-//
-//            return 1;
-//            break;
-//        case 0x3000 ... 0x3EFF:
-//            return ppuread(address - 0x1000);
-//            break;
-//        default:
-//            return 1;
-//            break;
-//    }
-//}
-
 // VS compatible version
 u8 PPU::ppuread(u16 address) {
     if (address >= 0x0000 && address <= 0x1FFF) {
@@ -468,60 +410,6 @@ u8 PPU::ppuread(u16 address) {
         return 1;
     }
 }
-
-
-//void PPU::ppuwrite(u16 address, u8 data) {
-//    switch (address) {
-//        case 0x0000 ... 0x1FFF:
-//            mapper->ppuwrite(address, data);
-//            break;
-//        case 0x2000 ... 0x2FFF:
-//            //Horizontal
-//            if (mapper->getMirroring() == 0) {
-//                if (address >= 0x2400 && address < 0x2800) {
-//                    address -= 0x400;
-//                }
-//
-//                if (address >= 0x2800 && address < 0x2c00) {
-//                    address -= 0x400;
-//                }
-//
-//                if (address >= 0x2c00 && address < 0x3000) {
-//                    address -= 0x800;
-//                }
-//                //Vertical
-//            } else if (mapper->getMirroring() == 1) {
-//                if (address >= 0x2800 && address < 0x3000) {
-//                    address -= 0x800;
-//                }
-//                //One-screen mirroring, lower-bank (MMC1)
-//            } else if (mapper->getMirroring() == 2) {
-//                address &= ~0xC00;
-//                //One-screen mirroring, upper-bank (MMC1)
-//            } else {
-//                address = (address & ~0xC00) + 0x400;
-//            }
-//
-//            vram[address - 0x2000] = data;
-//            break;
-//        case 0x3F00 ... 0x3F0F:
-//            bg_palette[address - 0x3F00] = data;
-//            break;
-//        case 0x3F10 ... 0x3F1F:
-//            if (address == 0x3F10 || address == 0x3F14 || address == 0x3F18 || address == 0x3F1C) {
-//                bg_palette[(address & 0x3F0F) - 0x3F00] = data;
-//            } else if (address >= 0x3F11 && address <= 0x3F1F) {
-//                sprite_palette[address - 0x3F10] = data;
-//            }
-//
-//            break;
-//        case 0x3000 ... 0x3EFF:
-//            ppuwrite(address - 0x1000, data);
-//            break;
-//        default:
-//            break;
-//    }
-//}
 
 void PPU::ppuwrite(u16 address, u8 data) {
     if (address >= 0x0000 && address <= 0x1FFF) {
@@ -690,58 +578,6 @@ void PPU::evalSprites() {
         Sprite sprite = secondaryOAM[secondaryOAMCursor];
 
         int cycle = (dot - 1) % 8;
-
-        /*switch (cycle) {
-            case 0 ... 1:
-                if (!isUninit(sprite)) {
-                    out = SpriteRenderEntity();
-                }
-
-                break;
-
-            case 2:
-                if (!isUninit(sprite)) {
-                    out.attr = sprite.attr;
-                    out.flipHorizontally = sprite.attr & 64;
-                    out.flipVertically = sprite.attr & 128;
-                    out.id = sprite.id;
-                }
-                break;
-
-            case 3:
-                if (!isUninit(sprite)) {
-                    out.counter = sprite.x;
-                }
-                break;
-
-            case 4:
-                if (!isUninit(sprite)) {
-                    spritePatternLowAddr = getSpritePatternAddress(sprite, out.flipVertically);
-                    out.lo = ppuread(spritePatternLowAddr);
-                }
-                break;
-
-            case 5:
-                break;
-
-            case 6:
-                if (!isUninit(sprite)) {
-                    spritePatternHighAddr = spritePatternLowAddr + 8;
-                    out.hi = ppuread(spritePatternHighAddr);
-                }
-                break;
-
-            case 7:
-                if (!isUninit(sprite)) {
-                    spriteRenderEntities.push_back(out);
-                }
-
-                secondaryOAMCursor++;
-                break;
-
-            default:
-                break;
-        }*/
 
         if (cycle >= 0 && cycle <= 1) {
             if (!isUninit(sprite)) {

@@ -62,6 +62,7 @@ class PPU : public INESBus {
     bool genNMI();
     bool generateFrame;
     void printState();
+    // Frame buffer
     uint32_t buffer[256 * 240] = {0};
 
    private:
@@ -120,6 +121,7 @@ class PPU : public INESBus {
     u8 ppu_read_buffer = 0;
     u8 ppu_read_buffer_cpy = 0;
 
+    // ARGB color, which will be written to the buffer as a pixel
     u32 palette[64] = {
         4283716692, 4278197876, 4278718608, 4281335944, 4282646628, 4284219440, 4283696128, 4282128384,
         4280297984, 4278729216, 4278206464, 4278205440, 4278202940, 4278190080, 4278190080, 4278190080,
