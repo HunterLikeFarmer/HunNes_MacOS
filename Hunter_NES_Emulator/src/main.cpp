@@ -170,6 +170,7 @@ int main(int argc, char** argv) {
             // Draw frame
             ppu.generateFrame = false;
             SDL_RenderSetScale(s, 2, 2);
+            // This is how the PPU buffer (much like MMIO) gets mapped to the window
             SDL_UpdateTexture(texture, NULL, ppu.buffer, 256 * sizeof(Uint32));
             SDL_RenderClear(s);
             SDL_RenderCopy(s, texture, NULL, NULL);

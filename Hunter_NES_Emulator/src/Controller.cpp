@@ -2,7 +2,9 @@
 
 namespace HunNes {
 
+// read the controller value is by serial shifting the bit
 u8 Controller::read(u16 address) {
+    // MMIO is mapping joy stick 1 value to address 0x4016
     if (address == 0x4016) {
         if (strobe) {
             return 0x40 | (btnState & 1);
@@ -27,6 +29,7 @@ void Controller::write(u16 address, u8 data) {
     }
 }
 
+// update the bit states
 void Controller::setButtonPressed(SDL_Keycode key, bool pressed) {
     if (key == SDLK_a) {
         btnState = (pressed) ? (btnState | (1 << 0)) : (btnState & ~(1 << 0));

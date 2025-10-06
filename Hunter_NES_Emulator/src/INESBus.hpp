@@ -6,7 +6,7 @@
 #include "Common/Typedefs.hpp"
 
 namespace HunNes {
-
+// virtual class that connects CPU with all other hardware (RAM, PPU...) by read/write access
 class INESBus {
    public:
     virtual ~INESBus() {}
