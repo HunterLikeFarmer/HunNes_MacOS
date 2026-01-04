@@ -12,6 +12,7 @@ void CPU6502::step() {
         cycle = 0;
     }
 
+    // Get the instruction at programCounter
     u8 instruction = fetchInstruction();
     executeInstruction(instruction);
     programCounter++;   // address += 16 bit
