@@ -10,6 +10,7 @@ namespace HunNes {
 
 // Mapper is like a virtual memory between the CPU/PPU Ram and ROM
 // It decides which block of memory in the ROM (could be 100 kb magnitude) will be mapped to the RAM (really small, 4kb)
+// and it decides how instructions (opcodes) can be read from/written to in the ROM 
 class Mapper {
    public:
     Mapper(std::vector<u8> &prgCode, std::vector<u8> &chrROM, int mirroring) : prgCode(prgCode),

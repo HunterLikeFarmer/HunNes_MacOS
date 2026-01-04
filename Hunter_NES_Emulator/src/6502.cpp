@@ -967,13 +967,17 @@ u8 CPU6502::memoryAccess(MemoryAccessMode mode, u16 address, u8 data) {
                 controller->write(address, data);
             }
         }
-        //APU I/O registers
-    } else if (address >= 0x4018 && address < 0x4020) {
-        // $4020 - $FFFF is for catridge, reading instructions
-        // In this case, what CPU is reading is directly from mapper instead of from RAM. This is how mapper works
-    } else if (address >= 0x6000 && address <= 0xFFFF) {
+        
+    } 
+    //APU I/O registers
+    else if (address >= 0x4018 && address < 0x4020) {
+        // $4020 - $FFFF is for catridge
+    } 
+    // In this case, what CPU is reading is directly from mapper instead of from RAM. This is how mapper works
+    // It reads the opcodes from ROM buffer through mapper
+    else if (address >= 0x6000 && address <= 0xFFFF) {
         if (mode == MemoryAccessMode::READ) {
-            // 
+            // read opcode byte at address variable
             readData = mapper->read(address);
         } else {
             mapper->write(address, data);

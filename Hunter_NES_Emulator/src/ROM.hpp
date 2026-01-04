@@ -16,7 +16,9 @@ class Mapper;
 struct INESHeader {
     //Header 16 byte
     char nes[4];
+    // This field means how many 16KB program exists exist
     u8 prgIn16kb;
+    // THis field means how many 8KB CHR-ROM exist
     u8 chrIn8kb;
     u8 flags6;
     u8 flags7;
@@ -38,7 +40,7 @@ class ROM {
    private:
     INESHeader header;
     std::vector<u8> trainer;    // Trainer usually contains mapper register translation and CHR-RAM caching code
-    std::vector<u8> prgCode;
+    std::vector<u8> prgCode;    // Byte arrays of all opcodes (instructions). Each element is one byte
     std::vector<u8> chrData;
     int mirroring;
     u8 mapperNum;

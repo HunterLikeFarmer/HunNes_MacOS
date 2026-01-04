@@ -28,6 +28,7 @@ void ROM::open(std::string filePath) {
     trainer.reserve(512);
     int prgSize = header.prgIn16kb * 16384;
     int chrSize = header.chrIn8kb * 8192;
+    // Create the buffer for all opcodes
     prgCode.resize(prgSize);
     chrData.resize(chrSize);
 
@@ -38,6 +39,8 @@ void ROM::open(std::string filePath) {
         in.read((char *)trainer.data(), 512);
     }
 
+    // populate the program code buffer
+    // In the source code ROM file, the program bytecode chunks are right after the header
     in.read((char *)prgCode.data(), header.prgIn16kb * 16384);
 
     if (header.chrIn8kb > 0) {
