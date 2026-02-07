@@ -1,2 +1,3 @@
 bin/x64/Debug/rom/
 bin/intermediates/
+*.xml

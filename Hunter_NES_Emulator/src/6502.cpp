@@ -2,6 +2,7 @@
 
 #include <assert.h>
 
+#define DMA_CYCLE 256
 namespace HunNes {
 
     
@@ -930,6 +931,8 @@ void CPU6502::executeInstruction(u8 instruction) {
 
 // NES RAM was chopped into different section, the real onboard section is only 2KB
 // Instead of having to handle the memory mapping memory everywhere, we centralize it here
+
+// By having Bus routing CPU operations to different sections, MMIO is also emulated
 u8 CPU6502::memoryAccess(MemoryAccessMode mode, u16 address, u8 data) {
     u8 readData = 0;
     
@@ -950,15 +953,17 @@ u8 CPU6502::memoryAccess(MemoryAccessMode mode, u16 address, u8 data) {
     // This area is for APU/IO
     } else if (address >= 0x4000 && address < 0x4018) {
         //COPY OAM
+        // This is to emulate DMA. Suspend CPU for 256 cycles, and allow DMA to retreive data
         if (address == 0x4014) {
             if (mode == MemoryAccessMode::READ) {
                 std::cout << "No read access at 0x4014";
             } else {
                 ppu->write(address, data);
 
-                for (int i = 0; i < 256; i++) {
+                // 256 means DMA cycle
+                for (int i = 0; i < DMA_CYCLE; i++) {
                     tick();
-                    ppu->copyOAM(read(data * 256 + i), i);
+                    ppu->copyOAM(read(data * DMA_CYCLE + i), i);
                 }
             }
         } else {
