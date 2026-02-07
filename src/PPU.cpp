@@ -1,4 +1,4 @@
-#include "PPU.hpp"
+#include "../include/PPU.hpp"
 
 #include <iostream>
 

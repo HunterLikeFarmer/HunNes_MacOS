@@ -1,3 +1,22 @@
-bin/x64/Debug/rom/
-bin/intermediates/
+# Build output
+/build/
+/CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Editors/IDEs
+/.vs/
+/.vscode/
 *.xml
+
+# Platform-specific binaries and debug files
+*.dll
+*.exe
+*.lib
+*.obj
+*.pdb
+
+# Local ROM files (keep directory scaffold)
+/rom/*

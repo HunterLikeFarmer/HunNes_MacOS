@@ -1,28 +1,109 @@
-#include <SDL2/SDL.h>
-#include <filesystem>
-#include <iostream>
-#include <map>
-#include <vector>
+#include "../include/Common/SDLCompat.hpp"
+
 #include <chrono>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <vector>
 
-#include "6502.hpp"
-#include "Controller.hpp"
-#include "Mapper/Mapper.hpp"
-#include "PPU.hpp"
-#include "ROM.hpp"
+#if defined(__has_include)
+#if __has_include(<filesystem>)
+#include <filesystem>
+#endif
+#if defined(__cpp_lib_filesystem) && (__cpp_lib_filesystem >= 201703L)
+namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#error "No usable filesystem API found. Use C++17 or provide <experimental/filesystem>."
+#endif
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
 
-int main(int argc, char** argv) {
+#include "../include/6502.hpp"
+#include "../include/Controller.hpp"
+#include "../include/Mapper/Mapper.hpp"
+#include "../include/PPU.hpp"
+#include "../include/ROM.hpp"
+
+namespace {
+
+bool toControllerButtonFromKey(SDL_Keycode key, HunNes::ControllerButton& outButton) {
+    switch (key) {
+        case SDLK_a:
+            outButton = HunNes::ControllerButton::A;
+            return true;
+        case SDLK_b:
+            outButton = HunNes::ControllerButton::B;
+            return true;
+        case SDLK_SPACE:
+            outButton = HunNes::ControllerButton::Select;
+            return true;
+        case SDLK_RETURN:
+            outButton = HunNes::ControllerButton::Start;
+            return true;
+        case SDLK_UP:
+            outButton = HunNes::ControllerButton::Up;
+            return true;
+        case SDLK_DOWN:
+            outButton = HunNes::ControllerButton::Down;
+            return true;
+        case SDLK_LEFT:
+            outButton = HunNes::ControllerButton::Left;
+            return true;
+        case SDLK_RIGHT:
+            outButton = HunNes::ControllerButton::Right;
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool toControllerButtonFromGamepadButton(Uint8 button, HunNes::ControllerButton& outButton) {
+    switch (button) {
+        case SDL_CONTROLLER_BUTTON_A:
+            outButton = HunNes::ControllerButton::A;
+            return true;
+        case SDL_CONTROLLER_BUTTON_B:
+            outButton = HunNes::ControllerButton::B;
+            return true;
+        case SDL_CONTROLLER_BUTTON_START:
+            outButton = HunNes::ControllerButton::Start;
+            return true;
+        case SDL_CONTROLLER_BUTTON_DPAD_UP:
+            outButton = HunNes::ControllerButton::Up;
+            return true;
+        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+            outButton = HunNes::ControllerButton::Down;
+            return true;
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+            outButton = HunNes::ControllerButton::Left;
+            return true;
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+            outButton = HunNes::ControllerButton::Right;
+            return true;
+        default:
+            return false;
+    }
+}
+
+}  // namespace
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     std::string romPath = "./rom";
     std::vector<std::string> romFiles;
 
     // Check if the rom directory exists and gather all files
-    if (!std::filesystem::exists(romPath)) {
+    if (!fs::exists(romPath)) {
         std::cout << "ROM directory not found. Please create a './rom' directory and place ROM files inside." << std::endl;
         return 1;
     }
 
-    for (const auto& entry : std::filesystem::directory_iterator(romPath)) {
-        if (entry.is_regular_file()) {
+    for (const auto& entry : fs::directory_iterator(romPath)) {
+        if (fs::is_regular_file(entry.path())) {
             std::string s = entry.path().string();
             romFiles.push_back(s);
         }
@@ -45,8 +126,9 @@ int main(int argc, char** argv) {
 
     // Prompt the user to select a ROM
     int selection = 0;
-    while (selection < 1 || selection > romFiles.size()) {
-        std::cout << "Select a ROM to play (1-" << romFiles.size() << "): ";
+    const int romCount = static_cast<int>(romFiles.size());
+    while (selection < 1 || selection > romCount) {
+        std::cout << "Select a ROM to play (1-" << romCount << "): ";
         std::cin >> selection;
         if (std::cin.fail()) {
             std::cin.clear(); // Clear the error flag
@@ -63,7 +145,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     // This is from extern library
-    SDL_GameController* con = nullptr;
+    [[maybe_unused]] SDL_GameController* con = nullptr;
 
     for (int i = 0; i < SDL_NumJoysticks(); i++) {
         if (SDL_IsGameController(i)) {
@@ -72,16 +154,6 @@ int main(int argc, char** argv) {
             break;
         }
     }
-
-    // Define key mapping
-    std::map<int, int> map;
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_A, SDLK_a));
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_B, SDLK_b));
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_START, SDLK_RETURN));
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_DPAD_UP, SDLK_UP));
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDLK_DOWN));
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_DPAD_LEFT, SDLK_LEFT));
-    map.insert(std::pair<int, int>(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDLK_RIGHT));
 
     SDL_Window* window;
     std::string window_title = "NES Emulator";
@@ -95,7 +167,7 @@ int main(int argc, char** argv) {
         SDL_WINDOW_SHOWN          // flags - see below
     );
 
-    if (window == NULL) {
+    if (window == nullptr) {
         std::cout << "Could not create window: " << SDL_GetError() << std::endl;
         return 1;
     }
@@ -107,7 +179,7 @@ int main(int argc, char** argv) {
     rom.printHeader();
     HunNes::Mapper* mapper = rom.getMapper();   // This is where we choose the mapper. It came with the ROM
 
-    if (mapper == NULL) {
+    if (mapper == nullptr) {
         std::cout << "Unknown mapper." << std::endl;
         return 1;
     }
@@ -134,16 +206,36 @@ int main(int argc, char** argv) {
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                 case SDL_CONTROLLERBUTTONDOWN:
-                    controller.setButtonPressed(map.find(event.cbutton.button)->second, true);
+                    {
+                        HunNes::ControllerButton button;
+                        if (toControllerButtonFromGamepadButton(event.cbutton.button, button)) {
+                            controller.setButtonPressed(button, true);
+                        }
+                    }
                     break;
                 case SDL_CONTROLLERBUTTONUP:
-                    controller.setButtonPressed(map.find(event.cbutton.button)->second, false);
+                    {
+                        HunNes::ControllerButton button;
+                        if (toControllerButtonFromGamepadButton(event.cbutton.button, button)) {
+                            controller.setButtonPressed(button, false);
+                        }
+                    }
                     break;
                 case SDL_KEYDOWN:
-                    controller.setButtonPressed(event.key.keysym.sym, true);
+                    {
+                        HunNes::ControllerButton button;
+                        if (toControllerButtonFromKey(event.key.keysym.sym, button)) {
+                            controller.setButtonPressed(button, true);
+                        }
+                    }
                     break;
                 case SDL_KEYUP:
-                    controller.setButtonPressed(event.key.keysym.sym, false);
+                    {
+                        HunNes::ControllerButton button;
+                        if (toControllerButtonFromKey(event.key.keysym.sym, button)) {
+                            controller.setButtonPressed(button, false);
+                        }
+                    }
                     break;
                 case SDL_QUIT:
                     is_running = false;

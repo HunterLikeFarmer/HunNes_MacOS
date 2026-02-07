@@ -1,4 +1,4 @@
-#include "6502.hpp"
+#include "../include/6502.hpp"
 
 #include <assert.h>
 

@@ -1,19 +1,51 @@
 # HunNes
 
-HunNes is an NES (Nintendo Entertainment System) emulator written in C++.
+HunNes is an NES emulator written in C++.
 
-This project aims to emulate the behavior of the NES hardware, including the 6502 CPU, PPU (graphics), and controllers. It's able to run real ROM games.
----
+This repository is Linux-first and built with CMake.
 
-## Getting Started
+## Requirements
 
-### Build Instructions
+- C++17 compiler (`g++` or `clang++`)
+- CMake 3.16+
+- SDL2 development package
 
-1. No need to have a C++ compiler installed if you are Windows:
+## Install SDL2
 
-3. Run the executable in the following directory:
+Ubuntu/Debian:
 
-   HunNes/bin/x64/Debug/main.exe
+```bash
+sudo apt-get update
+sudo apt-get install -y libsdl2-dev
+```
 
-4. Add your own roms in HunNes/bin/x64/Debug/rom directory
+Fedora:
 
+```bash
+sudo dnf install SDL2-devel
+```
+
+Arch:
+
+```bash
+sudo pacman -S sdl2
+```
+
+## Build
+
+From repo root:
+
+```bash
+cmake -S . -B build
+cmake --build build -j
+```
+
+## Run
+
+Create `rom/` in the repo root and place `.nes` files there.
+
+Then run:
+
+```bash
+./build/HunNes
+```

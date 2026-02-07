@@ -1,13 +1,13 @@
-#include "ROM.hpp"
+#include "../include/ROM.hpp"
 
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 
-#include "Mapper/CNROM.hpp"
-#include "Mapper/MMC1.hpp"
-#include "Mapper/NROM.hpp"
-#include "Mapper/UnROM.hpp"
+#include "../include/Mapper/CNROM.hpp"
+#include "../include/Mapper/MMC1.hpp"
+#include "../include/Mapper/NROM.hpp"
+#include "../include/Mapper/UnROM.hpp"
 
 namespace HunNes {
 

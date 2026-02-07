@@ -1,4 +1,4 @@
-#include "RAM.hpp"
+#include "../include/RAM.hpp"
 
 namespace HunNes {
 

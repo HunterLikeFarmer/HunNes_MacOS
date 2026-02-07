@@ -1,4 +1,4 @@
-#include "Mapper.hpp"
+#include "../../include/Mapper/Mapper.hpp"
 
 namespace HunNes {
 

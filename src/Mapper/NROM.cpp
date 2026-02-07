@@ -1,4 +1,4 @@
-#include "NROM.hpp"
+#include "../../include/Mapper/NROM.hpp"
 
 namespace HunNes {
 
