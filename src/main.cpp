@@ -92,6 +92,7 @@ bool toControllerButtonFromGamepadButton(Uint8 button, HunNes::ControllerButton&
 
 }  // namespace
 
+// compiler supressor
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     std::string romPath = "./rom";
     std::vector<std::string> romFiles;
@@ -128,6 +129,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     int selection = 0;
     const int romCount = static_cast<int>(romFiles.size());
     while (selection < 1 || selection > romCount) {
+        std::cout << "Please choose a valid ROM number" << std::endl;
         std::cout << "Select a ROM to play (1-" << romCount << "): ";
         std::cin >> selection;
         if (std::cin.fail()) {

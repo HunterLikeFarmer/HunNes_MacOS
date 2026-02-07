@@ -42,8 +42,8 @@ class ROM {
     std::vector<u8> trainer;    // Trainer usually contains mapper register translation and CHR-RAM caching code
     std::vector<u8> prgCode;    // Byte arrays of all opcodes (instructions). Each element is one byte
     std::vector<u8> chrData;
-    int mirroring;
-    u8 mapperNum;
+    int mirroring = 0;
+    u8 mapperNum = 0;
 };
 
 };  

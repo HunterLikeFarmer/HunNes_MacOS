@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "../include/Mapper/CNROM.hpp"
+#include "../include/Mapper/MMC3.hpp"
+#include "../include/Mapper/MMC5.hpp"
 #include "../include/Mapper/MMC1.hpp"
 #include "../include/Mapper/NROM.hpp"
 #include "../include/Mapper/UnROM.hpp"
@@ -25,7 +27,7 @@ void ROM::open(std::string filePath) {
     in.read(reinterpret_cast<char *>(&header.flags10), sizeof(u8));
     in.read(reinterpret_cast<char *>(&header.zeros), sizeof(char[5]));
 
-    trainer.reserve(512);
+    trainer.resize(512);
     int prgSize = header.prgIn16kb * 16384;
     int chrSize = header.chrIn8kb * 8192;
     // Create the buffer for all opcodes
@@ -33,6 +35,7 @@ void ROM::open(std::string filePath) {
     chrData.resize(chrSize);
 
     mirroring = header.flags6 & 1;
+    mapperNum = ((header.flags6 & 0xF0) >> 4) | (header.flags7 & 0xF0);
 
     //If trainer present
     if ((header.flags6 >> 2) & 1) {
@@ -56,7 +59,7 @@ void ROM::printHeader() {
     std::cout << "Signature: " << header.nes << "\n";
     std::cout << "PRG ROM (program code) size: " << (int)header.prgIn16kb << " x 16kb \n";
     std::cout << "CHR ROM (graphical data) size: " << (int)header.chrIn8kb << " x 8kb \n";
-    mapperNum = ((header.flags6 & 0xF0) >> 4) | (header.flags7 & 0xF0); // Mapper is usually determined by flag6 and flag7 in header
+    std::cout << "Mapper: " << (int)mapperNum << "\n";
     std::bitset<8> flags6Bits(header.flags6);
     std::bitset<8> flags7Bits(header.flags7);
     std::cout << "Flags 6: " << flags6Bits << "\n";
@@ -85,8 +88,17 @@ Mapper* ROM::getMapper() {
             return new CNROM(prgCode, chrData, mirroring);
             break;
 
+        case 4:
+            return new MMC3(prgCode, chrData, mirroring);
+            break;
+
+        case 5:
+            return new MMC5(prgCode, chrData, mirroring);
+            break;
+
         default:
             //Unsupported mapper:
+            std::cout << "Unsupported mapper number: " << (int) mapperNum << std::endl;
             return NULL;
             break;
     }

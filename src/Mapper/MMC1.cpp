@@ -4,11 +4,14 @@ namespace HunNes {
 
     void MMC1::write(u16 address, u8 data) {
         //prg ram region
-        if (address < 0x8000) {
+        if (address >= 0x6000 && address < 0x8000) {
             if (!(prgBank & 0x10)) {
                 prgRam[address - 0x6000] = data;
             }
 
+            return;
+        }
+        if (address < 0x8000) {
             return;
         }
 
@@ -45,7 +48,7 @@ namespace HunNes {
             else if (address >= 0xC000 && address <= 0xDFFF) {
                 chrBank1 = mmc1SR;
             }
-            else if (address >= 0xE000 && address <= 0xFFFF) {
+            else if (address >= 0xE000) {
                 prgBank = mmc1SR;
             }
 
@@ -58,10 +61,13 @@ namespace HunNes {
 
     u8 MMC1::read(u16 address) {
         //prg ram region
-        if (address < 0x8000) {
+        if (address >= 0x6000 && address < 0x8000) {
             if (!(prgBank & 0x10)) {
                 return prgRam[address - 0x6000];
             }
+            return 0;
+        }
+        if (address < 0x8000) {
             return 0;
         }
 

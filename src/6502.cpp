@@ -932,12 +932,12 @@ void CPU6502::executeInstruction(u8 instruction) {
 // NES RAM was chopped into different section, the real onboard section is only 2KB
 // Instead of having to handle the memory mapping memory everywhere, we centralize it here
 
-// By having Bus routing CPU operations to different sections, MMIO is also emulated
+// This is emulating address decoder, which routes the r/w operations to different buses
 u8 CPU6502::memoryAccess(MemoryAccessMode mode, u16 address, u8 data) {
     u8 readData = 0;
     
     // 2KB onboard section
-    if (address >= 0 && address < 0x2000) {
+    if (address < 0x2000) {
         if (mode == MemoryAccessMode::READ) {
             readData = ram.read(address);
         } else {
@@ -977,11 +977,12 @@ u8 CPU6502::memoryAccess(MemoryAccessMode mode, u16 address, u8 data) {
     } 
     //APU I/O registers
     else if (address >= 0x4018 && address < 0x4020) {
-        // $4020 - $FFFF is for catridge
+        // Test mode region, usually disabled on retail consoles.
     } 
-    // In this case, what CPU is reading is directly from mapper instead of from RAM. This is how mapper works
-    // It reads the opcodes from ROM buffer through mapper
-    else if (address >= 0x6000 && address <= 0xFFFF) {
+    // Cartridge space.
+    // Includes mapper control registers at $4020-$5FFF (e.g. MMC5 $5100+),
+    // PRG-RAM at $6000-$7FFF and PRG-ROM at $8000-$FFFF.
+    else if (address >= 0x4020) {
         if (mode == MemoryAccessMode::READ) {
             // read opcode byte at address variable
             readData = mapper->read(address);

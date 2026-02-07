@@ -17,3 +17,6 @@ compile_commands.json
 # Local ROM files (keep directory scaffold)
 /rom/*
 !/rom/.gitkeep
+
+# cache
+.cache
