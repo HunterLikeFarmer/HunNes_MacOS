@@ -2,12 +2,12 @@
 
 HunNes is an NES emulator written in C++.
 
-This repository is Linux-first and built with CMake.
+This repository is Linux-first and built with Make.
 
 ## Requirements
 
 - C++17 compiler (`g++` or `clang++`)
-- CMake 3.16+
+- GNU Make
 - SDL2 development package
 
 ## Install SDL2
@@ -36,8 +36,7 @@ sudo pacman -S sdl2
 From repo root:
 
 ```bash
-cmake -S . -B build
-cmake --build build -j
+make -j
 ```
 
 ## Run
@@ -48,4 +47,6 @@ Then run:
 
 ```bash
 ./build/HunNes
+# or
+make run
 ```

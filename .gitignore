@@ -1,9 +1,5 @@
 # Build output
 /build/
-/CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
 compile_commands.json
 
 # Editors/IDEs
@@ -20,3 +16,4 @@ compile_commands.json
 
 # Local ROM files (keep directory scaffold)
 /rom/*
+!/rom/.gitkeep
