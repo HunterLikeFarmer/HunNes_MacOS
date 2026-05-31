@@ -7,12 +7,9 @@ compile_commands.json
 /.vscode/
 *.xml
 
-# Platform-specific binaries and debug files
-*.dll
-*.exe
-*.lib
-*.obj
-*.pdb
+# macOS metadata and debug bundles
+.DS_Store
+*.dSYM/
 
 # Local ROM files (keep directory scaffold)
 /rom/*

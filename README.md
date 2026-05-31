@@ -2,33 +2,27 @@
 
 HunNes is an NES emulator written in C++.
 
-This repository is Linux-first and built with Make.
+This repository is configured for macOS and built with Make.
 
 ## Requirements
 
-- C++17 compiler (`g++` or `clang++`)
-- GNU Make
-- SDL2 development package
+- macOS
+- Xcode Command Line Tools
+- [Homebrew](https://brew.sh/)
+- SDL2
 
-## Install SDL2
+## Install Dependencies
 
-Ubuntu/Debian:
+Install the Xcode Command Line Tools if they are not already available:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y libsdl2-dev
+xcode-select --install
 ```
 
-Fedora:
+Install SDL2 with Homebrew:
 
 ```bash
-sudo dnf install SDL2-devel
-```
-
-Arch:
-
-```bash
-sudo pacman -S sdl2
+brew install sdl2
 ```
 
 ## Build
@@ -36,7 +30,7 @@ sudo pacman -S sdl2
 From repo root:
 
 ```bash
-make -j
+make -j"$(sysctl -n hw.logicalcpu)"
 ```
 
 ## Run
@@ -46,7 +40,7 @@ Create `rom/` in the repo root and place `.nes` files there.
 Then run:
 
 ```bash
-./build/HunNes
+./run.sh
 # or
 make run
 ```
